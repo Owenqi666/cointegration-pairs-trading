@@ -165,27 +165,22 @@ This protocol ensures that every trade is executed using information available s
 
 Pairs are selected from same-industry stocks where common macro and industry factors dominate, leaving idiosyncratic spreads that revert to equilibrium.
 
-| Sector | Pair |
-|--------|------|
-| Investment Banking | GS / MS |
-| Beverages | KO / PEP |
-| Payments | V / MA |
-| Consumer Staples | PG / CL |
-| Telecom | VZ / T |
+| Sector | Pair | Role in Study |
+|--------|------|---------------|
+| Beverages | KO / PEP | Textbook baseline. The most-cited pair in stat arb literature; used to verify that the framework reproduces known results. |
+| Investment Banking | GS / MS | Stress test. Includes the 2020 COVID crash and the 2023 regional banking crisis, testing whether cointegration survives systemic shocks. |
 
-The Engle-Granger framework is expected to hold well on these pairs because the underlying economic relationship is an equilibrium, not a trend.
+The Engle-Granger framework is expected to hold well on both pairs because the underlying economic relationship is an equilibrium, not a trend.
 
-## Study 2: AI Supply-Chain Pairs (Extension)
+## Study 2: AI Supply-Chain Pair (Extension)
 
-Pairs are selected along the AI value chain, where the economic link is **business dependence** rather than same-industry competition:
+The pair is selected along the AI value chain, where the economic link is **business dependence** rather than same-industry competition:
 
-| Relationship | Pair |
-|--------------|------|
-| GPU supplier vs. AI hyperscaler | NVDA / MSFT |
-| GPU supplier vs. AI hyperscaler | NVDA / META |
-| Semiconductor equipment vs. foundry | ASML / TSM |
+| Relationship | Pair | Role in Study |
+|--------------|------|---------------|
+| GPU supplier vs. AI hyperscaler | NVDA / MSFT | Boundary case. Tests whether classical cointegration applies when the relationship is theme-driven rather than equilibrium-driven. |
 
-These pairs are driven by a common theme (AI capex cycle) rather than an equilibrium relationship. Static Engle-Granger cointegration is expected to fail on most of the 2016–2026 window because one leg typically outruns the other in trend phases (NVDA's 2023–2024 rally being the clearest example).
+This pair is driven by a common theme (AI capex cycle) rather than an equilibrium relationship. Static Engle-Granger cointegration is expected to fail across the 2016–2026 window because NVDA's 2023–2024 rally created a persistent trend divergence rather than a mean-reverting deviation.
 
 **Rolling cointegration** is applied instead: the Engle-Granger test is re-run on a moving 60-day window, and trading is enabled only when the test passes at the 5% level within the current window. This allows the strategy to opportunistically capture mean-reverting episodes without assuming a permanent equilibrium.
 
