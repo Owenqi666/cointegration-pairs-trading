@@ -9,7 +9,9 @@ from metrics import summarize, market_beta
 
 
 def get_windows(start_year=2016, end_year=2026, train_years=3):
-    # expanding-origin walk-forward: 3y train, 1y test, stepped by 1 year
+    # rolling 3-year train / 1-year test, stepped by 1 year (a.k.a. rolling-
+    # origin or sliding-window walk-forward; NOT expanding-origin, which would
+    # keep the start year fixed and grow the train window each fold)
     windows = []
     for test_year in range(start_year + train_years, end_year):
         train_start = f'{test_year - train_years}-01-01'
@@ -118,16 +120,19 @@ def run_walk_forward(pair, start='2016-01-01', end='2026-01-01'):
     # concatenate out-of-sample returns across folds
     all_returns = pd.concat([f['returns'] for f in traded]).sort_index()
 
-    # reconstruct a single out-of-sample capital trajectory by compounding
+    # reconstruct a single out-of-sample capital trajectory by compounding.
+    # the initial capital is explicitly 1.0, declared through summarize's `base`
+    # argument so the calculation does not rely on the invariant that
+    # returns[0] == 0 holds for every fold's run_backtest.
     capital_oos = (1.0 + all_returns).cumprod()
 
     # aggregate metrics on the concatenated OOS sequence
-    agg_m = summarize(capital_oos, all_returns, rf, market)
+    agg_m = summarize(capital_oos, all_returns, rf, market, base=1.0)
 
     aggregate = {
         'n_traded_folds': n_traded,
         'n_total_folds': len(folds),
-        'total_return': float(capital_oos.iloc[-1]) - 1.0,
+        'total_return': float((1.0 + all_returns).prod()) - 1.0,
         'n_trades': int(sum(f['n_trades'] for f in traded)),
         **agg_m,
     }

@@ -3,9 +3,12 @@ import pandas as pd
 import statsmodels.api as sm
 
 
-def annualized_return(capital, days=252):
+def annualized_return(capital, days=252, base=None):
     # geometric annualization of total return
-    total = float(capital.iloc[-1]) / float(capital.iloc[0]) - 1.0
+    # base: optional explicit initial capital. If None, infers from capital.iloc[0]
+    # (which only equals the true initial if the first-day return was 0).
+    c_0 = float(capital.iloc[0]) if base is None else float(base)
+    total = float(capital.iloc[-1]) / c_0 - 1.0
     t = len(capital)
     if t <= 1:
         return 0.0
@@ -63,9 +66,9 @@ def market_beta(strategy_returns, market_prices, rf):
     }
 
 
-def summarize(capital, returns, rf, market_prices, days=252):
+def summarize(capital, returns, rf, market_prices, days=252, base=None):
     # one-stop metric bundle for a single backtest run
-    r_ann = annualized_return(capital, days)
+    r_ann = annualized_return(capital, days, base=base)
     vol_ann = annualized_vol(returns, days)
     sharpe = sharpe_ratio(returns, rf, days)
     mdd = max_drawdown(capital)

@@ -2,6 +2,19 @@
 
 A statistical arbitrage framework that identifies mean-reverting pairs of stocks, generates trading signals from standardized spread deviations, and evaluates performance through two complementary out-of-sample protocols. A **classical study** applies Walk-Forward validation to same-sector pairs where cointegration is expected to hold in equilibrium; an **extension study** applies rolling cointegration to an AI supply-chain pair where the relationship is theme-driven and classical methods are expected to fail.
 
+## How to Run
+
+```bash
+git clone https://github.com/Owenqi666/pairs_trading
+cd pairs_trading
+pip install -r requirements.txt
+
+python main.py       # Study 1: Walk-Forward on KO/PEP and GS/MS
+python rolling.py    # Study 2: Rolling cointegration on NVDA/MSFT
+```
+
+Individual modules can also be run for their smoke tests (e.g. `python backtest.py`); the test pair is controlled by the `'GSMS'` key at the top of each smoke block and can be changed to `'KOPEP'` or `'NVDAMSFT'` without touching any other code, thanks to the central registry in `pairs.py`.
+
 ## Project Structure
 
 ```
@@ -119,9 +132,13 @@ with $f = 0.0005$.
 
 ### 7. Performance Metrics
 
-Annualized return (geometric)
+Annualized return, geometric, used for cumulative performance reporting
 
 $$R_{\text{ann}} = (1 + R_{\text{total}})^{252/T} - 1$$
+
+Mean daily excess return, arithmetic, used for the Sharpe numerator
+
+$$\bar{r} \cdot 252$$
 
 Annualized volatility
 
@@ -129,7 +146,9 @@ $$\sigma_{\text{ann}} = \sigma_{\text{daily}} \cdot \sqrt{252}$$
 
 Sharpe ratio with live risk-free rate from `^IRX`
 
-$$\text{Sharpe} = \frac{R_{\text{ann}} - \bar{R_f}}{\sigma_{\text{ann}}}$$
+$$\text{Sharpe} = \frac{\bar{r} \cdot 252 - \bar{R_f}}{\sigma_{\text{ann}}}$$
+
+The arithmetic annualization appears in the Sharpe numerator because Sharpe is defined in terms of expected excess return, which is arithmetic; the geometric annualization is used only for displaying total performance. Both quantities are reported in the per-pair tables and the difference between them is negligible at daily frequency for the return magnitudes observed in this study.
 
 Maximum drawdown
 
@@ -278,3 +297,5 @@ All three $\beta_m$ estimates are economically indistinguishable from zero; all 
 **Threshold asymmetry between studies.** Study 1 uses $p < 0.10$ while Study 2 uses $p < 0.05$. This asymmetry reflects two different concerns: Study 1 compensates for the low statistical power of ADF on short three-year windows, while Study 2 compensates for the multiple-testing inflation of daily rolling tests. Both choices are grounded in method-specific reasoning rather than an attempt to maximize measured profitability, but the inconsistency does mean the two studies' tradable-fraction numbers are not directly comparable.
 
 **Fixed strategy parameters.** Entry threshold (2.0), exit threshold (0.5), stop-loss threshold (3.0), and fee rate (0.0005) are held constant across all pairs and all folds. These parameters were not tuned to the data, which protects against overfitting but also means the reported results do not represent optimal parameter choices for any specific pair.
+
+**Trade count semantics.** The `n_trades` metric counts **position changes** (flat → long, flat → short, or exit to flat), so a single round-trip (flat → ±1 → flat) contributes two to the count. This convention was chosen because it captures the number of transactions on which transaction costs are actually paid, but it should not be confused with "number of round-trip trades," which would be half.
