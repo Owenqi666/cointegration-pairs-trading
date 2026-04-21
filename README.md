@@ -22,10 +22,10 @@ pairs_trading/
 ├── data.py              # Price data loading (pair, market benchmark, ^IRX risk-free)
 ├── pairs.py             # Central registry of all pair metadata and smoke-test helper
 ├── cointegration.py     # ADF test, Engle-Granger two-step, OU half-life estimation
-├── signal.py            # Spread construction, rolling z-score, state-machine signal
+├── signals.py           # Spread construction, rolling z-score, state-machine signal
 ├── backtest.py          # Dollar-normalized position sizing, T+1 PnL, transaction costs
 ├── metrics.py           # Sharpe, max drawdown, CAPM-style market-neutrality regression
-├── walk_forward.py      # 7-fold expanding-origin walk-forward orchestration
+├── walk_forward.py      # 7-fold rolling-origin walk-forward orchestration
 ├── main.py              # Study 1 entry point (classical same-sector pairs)
 └── rolling.py           # Study 2 entry point (rolling cointegration extension)
 ```

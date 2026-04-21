@@ -118,12 +118,12 @@ def run_rolling_backtest(prices, signal, beta_series,
                 cost[i] += fee_rate * (n_y * y[i] + n_x * x[i])
                 n_y = 0.0
                 n_x = 0.0
-            # open new position using today's beta from the rolling fit
+            # open new position using today's beta from the rolling fit.
+            # invariant: when signal != 0, generate_rolling_signal already
+            # guaranteed pvalue is finite, which implies beta is finite too
+            # since both are computed in the same window of rolling_cointegration
             if curr_sig != 0:
                 beta_trade = b[i]
-                # defensive: if beta is nan at warmup edge, skip opening
-                if np.isnan(beta_trade):
-                    continue
                 denom = y[i] + beta_trade * x[i]
                 n_y = capital / denom
                 n_x = beta_trade * capital / denom
@@ -212,7 +212,7 @@ def print_rolling_report(result):
     print('\n=== Market neutrality ===')
     print(f"beta_m: {result['beta_m']:.4f}  "
           f"(p={result['beta_pvalue']:.3f})")
-    print(f"alpha (daily: {result['alpha_daily']:.6f}  "
+    print(f"alpha (daily): {result['alpha_daily']:.6f}  "
           f"(p={result['alpha_pvalue']:.3f})")
     print(f"r_squared: {result['r_squared']:.4f}")
 

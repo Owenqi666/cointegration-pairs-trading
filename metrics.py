@@ -92,7 +92,7 @@ if __name__ == '__main__':
     from pairs import load_smoke
     from data import load_market, load_rf
     from cointegration import engle_granger, half_life
-    from signal import compute_spread, compute_zscore, generate_signal
+    from signals import compute_spread, compute_zscore, generate_signal
     from backtest import run_backtest
 
     prices, y, x, pair = load_smoke('GSMS')

@@ -3,7 +3,7 @@ import pandas as pd
 
 from data import load_pair, load_market, load_rf
 from cointegration import engle_granger, half_life
-from signal import compute_spread, compute_zscore, generate_signal
+from signals import compute_spread, compute_zscore, generate_signal
 from backtest import run_backtest
 from metrics import summarize, market_beta
 

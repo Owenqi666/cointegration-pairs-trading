@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # full pipeline smoke test — change pair key here to test another
     from pairs import load_smoke
     from cointegration import engle_granger, half_life
-    from signal import compute_spread, compute_zscore, generate_signal
+    from signals import compute_spread, compute_zscore, generate_signal
 
     prices, y, x, pair = load_smoke('GSMS')
     print(f"=== Smoke test: {pair['label']} ===")
